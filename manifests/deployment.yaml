@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dev
+  name: movie-library-deployment
+  labels:
+    app.kubernetes.io/name: movie-library
+    app.kubernetes.io/instance: movie-library
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: movie-library
+      app.kubernetes.io/instance: movie-library
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: movie-library
+        app.kubernetes.io/instance: movie-library
+    spec:
+      serviceAccountName: ''
+      securityContext: {}
+      containers:
+        - name: movie-library
+          securityContext: {}
+          image: 'movie-library:3.0'
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          resources: {}
+          env:
+            - name: REACT_APP_API
+              valueFrom:
+                secretKeyRef:
+                  name: moviedb-api-secret
+                  key: moviedb_app_api
+      nodeSelector: {}
+      affinity: {}
+      tolerations: {}
